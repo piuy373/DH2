@@ -8293,7 +8293,7 @@ export const Pokedex: import('../sim/dex-species').SpeciesDataTable = {
 		types: ["Grass"],
 		genderRatio: {M: 0.875, F: 0.125},
 		baseStats: {hp: 65, atk: 110, def: 130, spa: 60, spd: 65, spe: 95},
-		abilities: {0: "Fertilize", 1: "Grassy Surge" H: "Purify"},
+		abilities: {0: "Fertilize", 1: "Grassy Surge", H: "Purify"},
 		heightm: 1,
 		weightkg: 25.5,
 		color: "Green",
