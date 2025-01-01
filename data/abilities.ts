@@ -494,6 +494,26 @@ export const Abilities: import('../sim/dex-abilities').AbilityDataTable = {
 		rating: 3,
 		num: 171,
 	},
+	calming: {
+		onStart(pokemon) {
+			let activated = false;
+			for (const target of pokemon.adjacentFoes()) {
+				if (!activated) {
+					this.add('-ability', pokemon, 'Calming', 'boost');
+					activated = true;
+				}
+				if (target.volatiles['substitute']) {
+					this.add('-immune', target);
+				} else {
+					this.boost({spa: -1}, target, pokemon, null, true);
+				}
+			}
+		},
+		flags: {},
+		name: "Calming",
+		rating: 3.5,
+		num: 313,
+	},
 	cheekpouch: {
 		onEatItem(item, pokemon) {
 			this.heal(pokemon.baseMaxhp / 3);
@@ -671,6 +691,27 @@ export const Abilities: import('../sim/dex-abilities').AbilityDataTable = {
 		name: "Compound Eyes",
 		rating: 3,
 		num: 14,
+	},
+	conflagrate: {
+		onModifyTypePriority: -1,
+		onModifyType(move, pokemon) {
+			const noModifyType = [
+				'judgment', 'multiattack', 'naturalgift', 'revelationdance', 'technoblast', 'terrainpulse', 'weatherball',
+			];
+			if (move.type === 'Normal' && !noModifyType.includes(move.id) &&
+				!(move.isZ && move.category !== 'Status') && !(move.name === 'Tera Blast' && pokemon.terastallized)) {
+				move.type = 'Fire';
+				move.typeChangerBoosted = this.effect;
+			}
+		},
+		onBasePowerPriority: 23,
+		onBasePower(basePower, pokemon, target, move) {
+			if (move.typeChangerBoosted === this.effect) return this.chainModify([4915, 4096]);
+		},
+		flags: {},
+		name: "Conflagrate",
+		rating: 4,
+		num: 315,
 	},
 	contrary: {
 		onChangeBoost(boost, target, source, effect) {
@@ -1033,23 +1074,23 @@ export const Abilities: import('../sim/dex-abilities').AbilityDataTable = {
 		rating: 3.5,
 		num: 88,
 	},
-	dragonsmaw: {
+	dragonssoul: {
 		onModifyAtkPriority: 5,
 		onModifyAtk(atk, attacker, defender, move) {
 			if (move.type === 'Dragon') {
-				this.debug('Dragon\'s Maw boost');
+				this.debug('Dragon\'s Soul boost');
 				return this.chainModify(1.5);
 			}
 		},
 		onModifySpAPriority: 5,
 		onModifySpA(atk, attacker, defender, move) {
 			if (move.type === 'Dragon') {
-				this.debug('Dragon\'s Maw boost');
+				this.debug('Dragon\'s Soul boost');
 				return this.chainModify(1.5);
 			}
 		},
 		flags: {},
-		name: "Dragon's Maw",
+		name: "Dragon's Soul",
 		rating: 3.5,
 		num: 263,
 	},
@@ -1257,6 +1298,27 @@ export const Abilities: import('../sim/dex-abilities').AbilityDataTable = {
 		name: "Fairy Aura",
 		rating: 3,
 		num: 187,
+	},
+	fertilize: {
+		onModifyTypePriority: -1,
+		onModifyType(move, pokemon) {
+			const noModifyType = [
+				'judgment', 'multiattack', 'naturalgift', 'revelationdance', 'technoblast', 'terrainpulse', 'weatherball',
+			];
+			if (move.type === 'Normal' && !noModifyType.includes(move.id) &&
+				!(move.isZ && move.category !== 'Status') && !(move.name === 'Tera Blast' && pokemon.terastallized)) {
+				move.type = 'Grass';
+				move.typeChangerBoosted = this.effect;
+			}
+		},
+		onBasePowerPriority: 23,
+		onBasePower(basePower, pokemon, target, move) {
+			if (move.typeChangerBoosted === this.effect) return this.chainModify([4915, 4096]);
+		},
+		flags: {},
+		name: "Fertilize",
+		rating: 4,
+		num: 317,
 	},
 	filter: {
 		onSourceModifyDamage(damage, source, target, move) {
@@ -1570,6 +1632,27 @@ export const Abilities: import('../sim/dex-abilities').AbilityDataTable = {
 		rating: 4,
 		num: 206,
 	},
+	gloominate: {
+		onModifyTypePriority: -1,
+		onModifyType(move, pokemon) {
+			const noModifyType = [
+				'judgment', 'multiattack', 'naturalgift', 'revelationdance', 'technoblast', 'terrainpulse', 'weatherball',
+			];
+			if (move.type === 'Normal' && !noModifyType.includes(move.id) &&
+				!(move.isZ && move.category !== 'Status') && !(move.name === 'Tera Blast' && pokemon.terastallized)) {
+				move.type = 'Dark';
+				move.typeChangerBoosted = this.effect;
+			}
+		},
+		onBasePowerPriority: 23,
+		onBasePower(basePower, pokemon, target, move) {
+			if (move.typeChangerBoosted === this.effect) return this.chainModify([4915, 4096]);
+		},
+		flags: {},
+		name: "Gloominate",
+		rating: 4,
+		num: 318,
+	},
 	gluttony: {
 		onStart(pokemon) {
 			pokemon.abilityState.gluttony = true;
@@ -1648,16 +1731,6 @@ export const Abilities: import('../sim/dex-abilities').AbilityDataTable = {
 		name: "Gorilla Tactics",
 		rating: 4.5,
 		num: 255,
-	},
-	grasspelt: {
-		onModifyDefPriority: 6,
-		onModifyDef(pokemon) {
-			if (this.field.isTerrain('grassyterrain')) return this.chainModify(1.5);
-		},
-		flags: {breakable: 1},
-		name: "Grass Pelt",
-		rating: 0.5,
-		num: 179,
 	},
 	grassysurge: {
 		onStart(source) {
@@ -2262,6 +2335,16 @@ export const Abilities: import('../sim/dex-abilities').AbilityDataTable = {
 		rating: 0.5,
 		num: 102,
 	},
+	leafshield: {
+		onModifyDefPriority: 6,
+		onModifyDef(pokemon) {
+			if (this.field.isTerrain('grassyterrain')) return this.chainModify(1.5);
+		},
+		flags: {breakable: 1},
+		name: "Leaf Shield",
+		rating: 0.5,
+		num: 179,
+	},
 	levitate: {
 		// airborneness implemented in sim/pokemon.js:Pokemon#isGrounded
 		flags: {breakable: 1},
@@ -2358,6 +2441,27 @@ export const Abilities: import('../sim/dex-abilities').AbilityDataTable = {
 		name: "Lingering Aroma",
 		rating: 2,
 		num: 268,
+	},
+	liquidate: {
+		onModifyTypePriority: -1,
+		onModifyType(move, pokemon) {
+			const noModifyType = [
+				'judgment', 'multiattack', 'naturalgift', 'revelationdance', 'technoblast', 'terrainpulse', 'weatherball',
+			];
+			if (move.type === 'Normal' && !noModifyType.includes(move.id) &&
+				!(move.isZ && move.category !== 'Status') && !(move.name === 'Tera Blast' && pokemon.terastallized)) {
+				move.type = 'Water';
+				move.typeChangerBoosted = this.effect;
+			}
+		},
+		onBasePowerPriority: 23,
+		onBasePower(basePower, pokemon, target, move) {
+			if (move.typeChangerBoosted === this.effect) return this.chainModify([4915, 4096]);
+		},
+		flags: {},
+		name: "Liquidate",
+		rating: 4,
+		num: 316,
 	},
 	liquidooze: {
 		onSourceTryHeal(damage, target, source, effect) {
@@ -2752,6 +2856,27 @@ export const Abilities: import('../sim/dex-abilities').AbilityDataTable = {
 		name: "Mycelium Might",
 		rating: 2,
 		num: 298,
+	},
+	mysticize: {
+		onModifyTypePriority: -1,
+		onModifyType(move, pokemon) {
+			const noModifyType = [
+				'judgment', 'multiattack', 'naturalgift', 'revelationdance', 'technoblast', 'terrainpulse', 'weatherball',
+			];
+			if (move.type === 'Normal' && !noModifyType.includes(move.id) &&
+				!(move.isZ && move.category !== 'Status') && !(move.name === 'Tera Blast' && pokemon.terastallized)) {
+				move.type = 'Psychic';
+				move.typeChangerBoosted = this.effect;
+			}
+		},
+		onBasePowerPriority: 23,
+		onBasePower(basePower, pokemon, target, move) {
+			if (move.typeChangerBoosted === this.effect) return this.chainModify([4915, 4096]);
+		},
+		flags: {},
+		name: "Mysticize",
+		rating: 4,
+		num: 319,
 	},
 	naturalcure: {
 		onCheckShow(pokemon) {
@@ -3353,6 +3478,17 @@ export const Abilities: import('../sim/dex-abilities').AbilityDataTable = {
 		rating: 4,
 		num: 158,
 	},
+	predator: {
+		onModifyDamage(damage, source, target, move) {
+			if (move && target.getMoveHitData(move).typeMod > 0) {
+				return this.chainModify([5120, 4096]);
+			}
+		},
+		flags: {},
+		name: "Predator",
+		rating: 2.5,
+		num: 314,
+	},
 	pressure: {
 		onStart(pokemon) {
 			this.add('-ability', pokemon, 'Pressure');
@@ -3536,6 +3672,24 @@ export const Abilities: import('../sim/dex-abilities').AbilityDataTable = {
 		name: "Pure Power",
 		rating: 5,
 		num: 74,
+	},
+	purify: {
+		onSetStatus(status, target, source, effect) {
+			if ((effect as Move)?.status) {
+				this.add('-immune', target, '[from] ability: Purify');
+			}
+			return false;
+		},
+		onTryAddVolatile(status, target) {
+			if (status.id === 'yawn') {
+				this.add('-immune', target, '[from] ability: Purify');
+				return null;
+			}
+		},
+		flags: {breakable: 1},
+		name: "Purify",
+		rating: 4,
+		num: 311,
 	},
 	purifyingsalt: {
 		onSetStatus(status, target, source, effect) {
@@ -3942,6 +4096,19 @@ export const Abilities: import('../sim/dex-abilities').AbilityDataTable = {
 		name: "Sand Veil",
 		rating: 1.5,
 		num: 8,
+	},
+	sapper: {
+		onBasePowerPriority: 23,
+		onBasePower(basePower, attacker, defender, move) {
+			if (move.flags['heal']) {
+				this.debug('Sapper boost');
+				return this.chainModify([5325, 4096]);
+			}
+		},
+		flags: {},
+		name: "Sapper",
+		rating: 3,
+		num: 312,
 	},
 	sapsipper: {
 		onTryHitPriority: 1,
